@@ -12,7 +12,8 @@ services:
       - ./config/domain.conf:/etc/nginx/conf.d/domain.conf:ro
       - ./frontend/dist/front-end:/usr/share/nginx/html
       - ./certbot/www/:/var/www/certbot/:ro
-      - ./certbot/conf/live/lhhrm.xyz:/etc/letsencrypt/live/lhhrm.xyz:ro
+      - ./certbot/conf/live/lhhrm.xyz/fullchain.pem:/etc/nginx/ssl/live/lhhrm.xyz/fullchain.pem
+      - ./certbot/conf/live/lhhrm.xyz/privkey.pem:/etc/nginx/ssl/live/lhhrm.xyz/privkey.pem 
     networks:
       - survey-network
 
