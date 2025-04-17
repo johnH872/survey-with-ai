@@ -1,0 +1,127 @@
+// Login page styles
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.background-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  z-index: -1;
+  overflow: hidden;
+}
+
+.circle {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  
+  &.circle-1 {
+    width: 300px;
+    height: 300px;
+    top: 10%;
+    left: 10%;
+    
+    @media (max-width: 600px) {
+      width: 150px;
+      height: 150px;
+    }
+  }
+  
+  &.circle-2 {
+    width: 200px;
+    height: 200px;
+    bottom: 20%;
+    right: 15%;
+    
+    @media (max-width: 600px) {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  
+  &.circle-3 {
+    width: 150px;
+    height: 150px;
+    top: 40%;
+    right: 30%;
+    
+    @media (max-width: 600px) {
+      width: 80px;
+      height: 80px;
+    }
+  }
+}
+
+.login-card {
+  margin-top: 2rem;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 1rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  width: 100%;
+  max-width: 500px;
+}
+
+.login-title {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.login-subtitle {
+  margin-bottom: 2rem;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.login-divider {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  
+  .divider-text {
+    color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+.google-button {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem 2rem;
+  border-radius: 1rem;
+  text-transform: none;
+  font-size: 1rem;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  
+  &:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+  }
+}
+
+.google-oauth-container {
+  margin-top: 1rem;
+  width: 100%;
+}
+
+.terms-text {
+  margin-top: 2rem;
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+} 

@@ -1,0 +1,27 @@
+.footer {
+  background-color: #f5f5f5;
+  padding: 40px 0 20px;
+  margin-top: 60px;
+  border-top: 1px solid #e0e0e0;
+  
+  .MuiTypography-h6 {
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #1976d2;
+  }
+  
+  .footer-link {
+    text-decoration: none;
+    margin-bottom: 8px;
+    display: block;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #1976d2;
+    }
+  }
+  
+  .MuiTypography-body2 {
+    line-height: 1.8;
+  }
+} 

@@ -1,0 +1,43 @@
+.analytics-container {
+
+  .text-truncate {
+    
+  }
+  .overview-section {
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    transition: transform 0.2s ease-in-out;
+    
+    &:hover {
+      transform: translateY(-5px);
+    }
+  }
+
+  .question-stats {
+    .question-card {
+      margin-bottom: 2rem;
+      
+      .chart-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+      }
+    }
+  }
+
+  .ai-analysis {
+    .response-item {
+      padding: 1rem;
+      border-radius: 8px;
+      background-color: #f8f9fa;
+      margin-bottom: 1rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+} 
