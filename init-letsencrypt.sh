@@ -40,7 +40,17 @@ echo
 
 echo "### Starting nginx ..."
 docker compose up --force-recreate -d frontend
-sleep 5 # Đợi nginx khởi động
+
+# Đợi nginx khởi động hoàn toàn
+echo "### Waiting for nginx to start ..."
+for i in {1..30}; do
+  if docker compose ps frontend | grep -q "running"; then
+    echo "Nginx is running"
+    break
+  fi
+  echo "Waiting for nginx to start... ($i/30)"
+  sleep 2
+done
 
 echo "### Checking nginx status ..."
 docker compose ps frontend
@@ -81,5 +91,13 @@ echo
 echo "### Checking certificate files ..."
 ls -la "$data_path/conf/live/$domains"
 
+# Đợi nginx khởi động lại
 echo "### Reloading nginx ..."
-docker compose exec frontend nginx -s reload 
+for i in {1..10}; do
+  if docker compose exec frontend nginx -s reload 2>/dev/null; then
+    echo "Nginx reloaded successfully"
+    break
+  fi
+  echo "Waiting for nginx to be ready for reload... ($i/10)"
+  sleep 2
+done 
