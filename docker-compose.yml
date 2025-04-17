@@ -42,12 +42,12 @@ services:
     container_name: survey-backend
     restart: always
     ports:
-      - "5000:5000"
+      - "5000:3001"
     env_file:
       - ./backend/.env
     environment:
       - NODE_ENV=production
-      - PORT=5000
+      - PORT=3001
       - DB_HOST=db
       - DB_PORT=5432
     depends_on:
