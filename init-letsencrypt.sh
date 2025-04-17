@@ -8,14 +8,12 @@ staging=0 # Đặt thành 1 nếu muốn test trước
 data_path="/app/survey-app/survey-with-ai/certbot"
 rsa_key_size=4096
 
-if [ -d "$data_path" ]; then
-  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
-  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
-    exit
-  fi
-fi
+# Kiểm tra và dừng các container đang chạy
+echo "### Stopping existing containers ..."
+docker compose down -v
 
 # Tạo các thư mục cần thiết
+echo "### Creating necessary directories ..."
 mkdir -p "$data_path/conf"
 mkdir -p "$data_path/www"
 mkdir -p "$data_path/conf/live/$domains"
@@ -42,7 +40,10 @@ echo
 
 echo "### Starting nginx ..."
 docker compose up --force-recreate -d frontend
-echo
+sleep 5 # Đợi nginx khởi động
+
+echo "### Checking nginx status ..."
+docker compose ps frontend
 
 echo "### Deleting dummy certificate for $domains ..."
 docker compose run --rm --entrypoint "\
@@ -76,6 +77,9 @@ docker compose run --rm --entrypoint "\
     --agree-tos \
     --force-renewal" certbot
 echo
+
+echo "### Checking certificate files ..."
+ls -la "$data_path/conf/live/$domains"
 
 echo "### Reloading nginx ..."
 docker compose exec frontend nginx -s reload 
