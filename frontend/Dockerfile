@@ -18,22 +18,14 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine
 
-# Remove default nginx config
-RUN rm -rf /etc/nginx/conf.d/*
-
 # Copy built assets from build stage
 COPY --from=build /app/dist /usr/share/nginx/html
 
 # Copy nginx configuration
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create necessary directories for certbot
-RUN mkdir -p /var/www/certbot
-RUN mkdir -p /etc/letsencrypt/live/lhhrm.xyz
-
-# Expose ports
+# Expose port 80
 EXPOSE 80
-EXPOSE 443
 
 # Start nginx
 CMD ["nginx", "-g", "daemon off;"] 
