@@ -1,5 +1,5 @@
 // API Configuration
-export const API_BASE_URL = 'http://localhost:3001/api';
+export const API_BASE_URL = 'https://lhhrm.xyz/api';
 
 // Authentication Configuration
 export const GOOGLE_CLIENT_ID = '404521969375-n7pqh5bkpe8iv8smlbmn6sqap4gkj2q7.apps.googleusercontent.com';

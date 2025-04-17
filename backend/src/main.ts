@@ -14,7 +14,9 @@ async function bootstrap() {
       'http://localhost:5173',
       'http://localhost:80',
       'http://localhost:3001',
-      'http://localhost'
+      'http://localhost',
+      'http://lhhrm.xyz/',
+      'http://lhhrm.xyz/',
     ],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
