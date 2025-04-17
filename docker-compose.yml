@@ -20,6 +20,17 @@ services:
       - "3001:3001"
     environment:
       - NODE_ENV=production
+      - PORT=3001
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=survey_db
+      - FRONTEND_URL=https://lhhrm.xyz
+      - GOOGLE_CALLBACK_URL=https://lhhrm.xyz/api/auth/google/callback
+    depends_on:
+      db:
+        condition: service_healthy
     restart: always
 
   certbot:
