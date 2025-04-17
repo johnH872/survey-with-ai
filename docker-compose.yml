@@ -1,6 +1,20 @@
 version: '3.8'
 
 services:
+
+  webserver:
+    image: nginx:1.17-alpine
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+    volumes:
+      - ./FrontEnd/.docker/config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./FrontEnd/dist/front-end:/usr/share/nginx/html
+      - ./certbot/www/:/var/www/certbot/:ro
+      - ./certbot/conf/live/lhhrm.xyz/fullchain.pem:/etc/nginx/ssl/live/lhhrm.xyz/fullchain.pem
+      - ./certbot/conf/live/lhhrm.xyz/privkey.pem:/etc/nginx/ssl/live/lhhrm.xyz/privkey.pem
+
   frontend:
     build:
       context: ./frontend
@@ -57,13 +71,10 @@ services:
       - survey-network
 
   certbot:
-    image: certbot/certbot
-    container_name: survey-certbot
+    image: certbot/certbot:latest
     volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    networks:
-      - survey-network
+      - ./certbot/www/:/var/www/certbot/:rw
+      - ./certbot/conf/:/etc/letsencrypt/:rw
 
 volumes:
   postgres_data:
