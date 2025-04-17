@@ -5,55 +5,69 @@ domains=(lhhrm.xyz www.lhhrm.xyz)
 email="taduyhoang10@gmail.com" # Thay email của bạn vào đây
 staging=0 # Đặt thành 1 nếu muốn test trước
 
-# Tạo thư mục certbot nếu chưa có
-mkdir -p ./certbot/conf
-mkdir -p ./certbot/www
+data_path="./certbot"
+rsa_key_size=4096
 
-# Tải các file cấu hình SSL
-if [ ! -e "./certbot/conf/options-ssl-nginx.conf" ] || [ ! -e "./certbot/conf/ssl-dhparams.pem" ]; then
-  echo "### Tải các tham số TLS ..."
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > ./certbot/conf/options-ssl-nginx.conf
-  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > ./certbot/conf/ssl-dhparams.pem
+if [ -d "$data_path" ]; then
+  read -p "Existing data found for $domains. Continue and replace existing certificate? (y/N) " decision
+  if [ "$decision" != "Y" ] && [ "$decision" != "y" ]; then
+    exit
+  fi
 fi
 
-# Tạo chứng chỉ tạm thời
-echo "### Tạo chứng chỉ tạm thời ..."
-docker-compose run --rm --entrypoint "\
-  openssl req -x509 -nodes -newkey rsa:4096 -days 1\
-    -keyout '/etc/letsencrypt/live/$domains/privkey.pem' \
-    -out '/etc/letsencrypt/live/$domains/fullchain.pem' \
+if [ ! -e "$data_path/conf/options-ssl-nginx.conf" ] || [ ! -e "$data_path/conf/ssl-dhparams.pem" ]; then
+  echo "### Downloading recommended TLS parameters ..."
+  mkdir -p "$data_path/conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot-nginx/certbot_nginx/_internal/tls_configs/options-ssl-nginx.conf > "$data_path/conf/options-ssl-nginx.conf"
+  curl -s https://raw.githubusercontent.com/certbot/certbot/master/certbot/certbot/ssl-dhparams.pem > "$data_path/conf/ssl-dhparams.pem"
+  echo
+fi
+
+echo "### Creating dummy certificate for $domains ..."
+path="/etc/letsencrypt/live/$domains"
+mkdir -p "$data_path/conf/live/$domains"
+docker compose run --rm --entrypoint "\
+  openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
+    -keyout '$path/privkey.pem' \
+    -out '$path/fullchain.pem' \
     -subj '/CN=localhost'" certbot
+echo
 
-# Khởi động nginx tạm thời
-echo "### Khởi động nginx ..."
-docker-compose up --force-recreate -d frontend
+echo "### Starting nginx ..."
+docker compose up --force-recreate -d frontend
+echo
 
-# Xóa chứng chỉ tạm thời
-echo "### Xóa chứng chỉ tạm thời ..."
-docker-compose run --rm --entrypoint "\
+echo "### Deleting dummy certificate for $domains ..."
+docker compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
+echo
 
-# Yêu cầu chứng chỉ Let's Encrypt
-echo "### Yêu cầu chứng chỉ Let's Encrypt ..."
+echo "### Requesting Let's Encrypt certificate for $domains ..."
 domain_args=""
 for domain in "${domains[@]}"; do
   domain_args="$domain_args -d $domain"
 done
 
-# Chọn chế độ staging nếu cần
+# Select appropriate email arg
+case "$email" in
+  "") email_arg="--register-unsafely-without-email" ;;
+  *) email_arg="--email $email" ;;
+esac
+
+# Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker-compose run --rm --entrypoint "\
+docker compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
-    --email $email \
+    $email_arg \
     $domain_args \
-    --rsa-key-size 4096 \
+    --rsa-key-size $rsa_key_size \
     --agree-tos \
     --force-renewal" certbot
+echo
 
-# Khởi động lại nginx
-echo "### Khởi động lại nginx ..."
-docker-compose exec frontend nginx -s reload 
+echo "### Reloading nginx ..."
+docker compose exec frontend nginx -s reload 
