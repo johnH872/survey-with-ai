@@ -5,7 +5,7 @@ domains=(lhhrm.xyz www.lhhrm.xyz)
 email="taduyhoang10@gmail.com" # Thay email của bạn vào đây
 staging=0 # Đặt thành 1 nếu muốn test trước
 
-data_path="./certbot"
+data_path="/app/survey-app/survey-with-ai/certbot"
 rsa_key_size=4096
 
 if [ -d "$data_path" ]; then
