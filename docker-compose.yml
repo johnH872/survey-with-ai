@@ -9,7 +9,7 @@ services:
       - 443:443
     restart: unless-stopped
     volumes:
-      - ./frontend/.docker/config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./config/domain.conf:/etc/nginx/conf.d/domain.conf:ro
       - ./frontend/dist/front-end:/usr/share/nginx/html
       - ./certbot/www/:/var/www/certbot/:ro
       - ./certbot/conf/live/lhhrm.xyz/fullchain.pem:/etc/nginx/ssl/live/lhhrm.xyz/fullchain.pem
