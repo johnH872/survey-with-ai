@@ -41,11 +41,13 @@ services:
       dockerfile: Dockerfile
     container_name: survey-backend
     restart: always
+    ports:
+      - "5000:5000"
     env_file:
       - ./backend/.env
     environment:
       - NODE_ENV=production
-      - PORT=3001
+      - PORT=5000
       - DB_HOST=db
       - DB_PORT=5432
     depends_on:
