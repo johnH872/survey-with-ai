@@ -1,14 +1,18 @@
 #!/bin/bash
 
-# Set the base directory
-BASE_DIR="/app/survey-app/survey-with-ai"
-cd "$BASE_DIR" || exit 1
+# Get the directory where the script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "$SCRIPT_DIR" || exit 1
+
+echo "Current directory: $(pwd)"
+echo "Checking for docker-compose.yml..."
+ls -la docker-compose.yml || echo "docker-compose.yml not found in current directory"
 
 domains=(lhhrm.xyz www.lhhrm.xyz)
 email="your-email@example.com" # Adding a valid address is strongly recommended
 staging=0 # Set to 1 if you're testing your setup to avoid hitting request limits
 
-data_path="$BASE_DIR/certbot"
+data_path="./certbot"
 rsa_key_size=4096
 
 # Create necessary directories
@@ -32,7 +36,7 @@ fi
 echo "### Creating dummy certificate for $domains ..."
 path="/etc/letsencrypt/live/$domains"
 mkdir -p "$data_path/conf/live/$domains"
-docker-compose -f "$BASE_DIR/docker-compose.yml" run --rm --entrypoint "\
+docker-compose run --rm --entrypoint "\
   openssl req -x509 -nodes -newkey rsa:$rsa_key_size -days 1\
     -keyout '$path/privkey.pem' \
     -out '$path/fullchain.pem' \
@@ -40,11 +44,11 @@ docker-compose -f "$BASE_DIR/docker-compose.yml" run --rm --entrypoint "\
 echo
 
 echo "### Starting nginx ..."
-docker-compose -f "$BASE_DIR/docker-compose.yml" up --force-recreate -d frontend
+docker-compose up --force-recreate -d frontend
 echo
 
 echo "### Deleting dummy certificate for $domains ..."
-docker-compose -f "$BASE_DIR/docker-compose.yml" run --rm --entrypoint "\
+docker-compose run --rm --entrypoint "\
   rm -Rf /etc/letsencrypt/live/$domains && \
   rm -Rf /etc/letsencrypt/archive/$domains && \
   rm -Rf /etc/letsencrypt/renewal/$domains.conf" certbot
@@ -65,7 +69,7 @@ esac
 # Enable staging mode if needed
 if [ $staging != "0" ]; then staging_arg="--staging"; fi
 
-docker-compose -f "$BASE_DIR/docker-compose.yml" run --rm --entrypoint "\
+docker-compose run --rm --entrypoint "\
   certbot certonly --webroot -w /var/www/certbot \
     $staging_arg \
     $email_arg \
@@ -76,4 +80,4 @@ docker-compose -f "$BASE_DIR/docker-compose.yml" run --rm --entrypoint "\
 echo
 
 echo "### Reloading nginx ..."
-docker-compose -f "$BASE_DIR/docker-compose.yml" exec frontend nginx -s reload 
+docker-compose exec frontend nginx -s reload 
